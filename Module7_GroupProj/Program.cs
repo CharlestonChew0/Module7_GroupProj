@@ -17,7 +17,20 @@ namespace Module7_GroupProj
 
             while (switchString != "Q") // This while loop will allow us to keep inputting user commands until the input = Q
             {
-                Console.WriteLine("Enter a number 1-4 to add as a key and value. Q to quit, S to sort, R to remove, A to add new pair:");
+                //==================
+                // MENU DISPLAY
+                // Display menu options for a good user interaction
+                //==================
+                Console.WriteLine("\n==== MENU ====");
+                Console.WriteLine("1-4 = Add preset values");
+                Console.WriteLine("A = Add new Key/Value");
+                Console.WriteLine("R = Remove key");
+                Console.WriteLine("S = Sort keys");
+                Console.WriteLine("D = Display dictionary");
+                Console.WriteLine("V = Add value to existing key");
+                Console.WriteLine("Q = Quit");
+                Console.Write("Enter your choice: ");
+                
                 switchString = Console.ReadLine().ToUpper();
 
                 switch (switchString)
@@ -64,8 +77,32 @@ namespace Module7_GroupProj
                         }
                         break;
 
+                    // ADD A VALUE TO AN EXISTING KEY
+                    // It allows the user to appenda new value to a key
+                    case "V":
+                        Console.Write("Enter existing key: ");
+                        string existingKey = Console.ReadLine();
+
+                        if (numberNames.ContainsKey(existingKey))
+                        {
+                            Console.Write("Enter value to add: ");
+                            string newValue = Console.ReadLine();
+
+                            // Add a new value to the list of the existing key
+                            numberNames[existingKey].Add(newValue);
+
+                            Console.WriteLine("Value added successfully!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Key not found.");
+                        }
+                        break;
+
+                    // Typing Q does nothing in the switch
+                    // but when the loop checks the value it will end the program
                     case "Q":
-                        Console.WriteLine("Exiting program..."); // Typing Q does nothing in the switch, but when the loop checks the value it will end the program
+                        Console.WriteLine("Exiting program...");
                         break;
 
                         // Everything past this point is just number switches the user can add to the dictionary
