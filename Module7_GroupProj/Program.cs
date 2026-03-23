@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,12 +14,12 @@ namespace Module7_GroupProj
         static void Main(string[] args)
         {
             string switchString = ""; // Set switch string to empty for initialization
+            // List string ensures single key can store multiple entries
 
             while (switchString != "Q") // This while loop will allow us to keep inputting user commands until the input = Q
             {
                 //==================
                 // MENU DISPLAY
-                // Display menu options for a good user interaction
                 //==================
                 Console.WriteLine("\n==== MENU ====");
                 Console.WriteLine("1-4 = Add preset values");
@@ -35,51 +35,60 @@ namespace Module7_GroupProj
 
                 switch (switchString)
                 {
-                    case "R": // If they type "R", it will wait for a number from the user to use as the key to remove
-                        Console.WriteLine("Enter a key to remove");
-                        numberNames.Remove(Console.ReadLine());
-                        break;
-
-                    //=============================
-                    // ADD NEW KEY AND VALUE
-                    //=============================
-                    case "A": // Creates a new Key and Value based on user input
-                        Console.Write("Enter key: ");
-                        string key = Console.ReadLine(); // First input is the key string
-
-                        Console.Write("Enter value: ");
-                        string value = Console.ReadLine(); // Second input is the value string
-
-                        // Create a new key with a list containing the entered value
-                        numberNames[key] = new List<string>{ value }; 
-
-                        Console.WriteLine($"Added: {key} -> {value}");
-                        break;
-
-                    case "S": 
-                        Console.WriteLine("Dictionary sorted by key:");
-
-                        foreach (var kvp in numberNames.OrderBy(k => k.Key)) // Goes over every key and sorts by numerical value
+                    case "R": // Wait for a key from the user to remove
+                        Console.WriteLine("Enter a key to remove: ");
+                        string keyToRemove = Console.ReadLine();
+                        if (numberNames.Remove(keyToRemove)) 
                         {
-                            Console.WriteLine($"{kvp.Key} -> {kvp.Value}");
+                            Console.WriteLine("Key removed successfully.");
+                        }
+                        else 
+                        {
+                            Console.WriteLine("Key not found. Nothing removed.");
                         }
                         break;
 
-                    // ==============================
-                    // DISPLAY DICTIONARY CONTENTS
-                    // ==============================
-                    case "D":
-                        Console.WriteLine("Dictionary Contents:");
+                    case "A": // Creates a new Key and Value based on user input
+                        Console.Write("Enter key: ");
+                        string key = Console.ReadLine(); 
 
+                        Console.Write("Enter value: ");
+                        string value = Console.ReadLine(); 
+
+                        // --- FIX IMPLEMENTED HERE ---
+                        // If the key already exists, then its added to the list rather than intializing a new list
+                        if (numberNames.ContainsKey(key)) 
+                        {
+                            numberNames[key].Add(value);
+                        }
+                        else
+                        {
+                            numberNames[key] = new List<string> { value };
+                        }
+
+                        Console.WriteLine($"Processed: {key} -> {value}");
+                        break;
+
+                    case "S": // OrderBy sorts keys to display for the user
+                        Console.WriteLine("Dictionary sorted by key:");
+                        
+                        // Goes over every key and sorts by alphabetical/numerical value
+                        foreach (var kvp in numberNames.OrderBy(k => k.Key)) 
+                        {
+                            Console.WriteLine($"{kvp.Key} -> {string.Join(", ", kvp.Value)}");
+                        } 
+                        // string.Join ensures program won't just say "System.Collections.Generic.List'1" 
+                        break;
+
+                    case "D": // DISPLAY DICTIONARY CONTENTS
+                        Console.WriteLine("Dictionary Contents:");
                         foreach (var kvp in numberNames)
                         {
                             Console.WriteLine($"{kvp.Key} -> {string.Join(", ", kvp.Value)}");
                         }
                         break;
 
-                    // ADD A VALUE TO AN EXISTING KEY
-                    // It allows the user to appenda new value to a key
-                    case "V":
+                    case "V": // ADD A VALUE TO AN EXISTING KEY (Requirement E)
                         Console.Write("Enter existing key: ");
                         string existingKey = Console.ReadLine();
 
@@ -88,9 +97,8 @@ namespace Module7_GroupProj
                             Console.Write("Enter value to add: ");
                             string newValue = Console.ReadLine();
 
-                            // Add a new value to the list of the existing key
+                            // .Add() appends the new item to the list of the existing key
                             numberNames[existingKey].Add(newValue);
-
                             Console.WriteLine("Value added successfully!");
                         }
                         else
@@ -99,40 +107,47 @@ namespace Module7_GroupProj
                         }
                         break;
 
-                    // Typing Q does nothing in the switch
-                    // but when the loop checks the value it will end the program
                     case "Q":
                         Console.WriteLine("Exiting program...");
                         break;
 
-                        // Everything past this point is just number switches the user can add to the dictionary
-
+                    // Presets 1-4: Populate dictionary with initial data
                     case "1":
-                        numberNames["1"] = new List<string>{ "One" }; // Predefined Key-value pairs (populate dictionary with initial data)
-                        Console.WriteLine("Added: 1(Key) -> One(Value)");
+                        AddPreset("1", "One");
                         break;
-
                     case "2":
-                        numberNames["2"] = new List<string>{ "Two" };
-                        Console.WriteLine("Added: 2(Key) -> Two(Value)");
+                        AddPreset("2", "Two");
                         break;
-
                     case "3":
-                        numberNames["3"] = new List<string>{ "Three" };
-                        Console.WriteLine("Added: 3(Key) -> Three(Value)");
+                        AddPreset("3", "Three");
                         break;
-
                     case "4":
-                        numberNames["4"] = new List<string>{ "Four" };
-                        Console.WriteLine("Added: 4(Key) -> Four(Value)");
+                        AddPreset("4", "Four");
                         break;
 
-
-
-                    default: // Default will catch any switch that isn't recognized and funnel it here
+                    default:
                         Console.WriteLine("Input unrecognized, try again");
                         break;
                 }
+            }
+        }
+
+        // Helper method to keep preset logic clean and prevent overwriting
+        static void AddPreset(string k, string v)
+        {
+            if (!numberNames.ContainsKey(k))
+            {
+                numberNames[k] = new List<string> { v };
+                Console.WriteLine($"Added: {k}(Key) -> {v}(Value)");
+            }
+            else if (!numberNames[k].Contains(v))
+            {
+                numberNames[k].Add(v);
+                Console.WriteLine($"Appended: {k}(Key) -> {v}(Value)");
+            }
+            else
+            {
+                Console.WriteLine("Preset already exists in this key.");
             }
         }
     }
